@@ -30,6 +30,8 @@ public class ApplicationConfig {
         return Javalin.create(config -> {
             config.bundledPlugins.enableCors(cors -> {
                 cors.addRule(it -> it.allowHost("http://localhost:3000"));
+                cors.addRule(it -> it.allowHost("http://localhost:5173"));
+                cors.addRule(it -> it.allowHost("https://www.javajolt.dk"));
             });
             config.routes.before(ctx -> {
                 String routeKey = ctx.method().name() + " " + ctx.path();
