@@ -1,7 +1,5 @@
 package dk.javajolt.controllers;
 import dk.javajolt.daos.UserDAO;
-import dk.javajolt.dtos.UserDTO;
-import dk.javajolt.entities.User;
 import dk.javajolt.security.TokenUtils;
 import dk.javajolt.services.UserService;
 import io.jsonwebtoken.Claims;
@@ -12,24 +10,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
+
 public class SecurityController {
     private static final Logger logger = LoggerFactory.getLogger(SecurityController.class);
     private final UserDAO userDAO;
     private final UserService userService;
+
     public SecurityController() {
         this.userDAO = UserDAO.getInstance();
         this.userService = new UserService();
     }
     public void register(Context ctx) {
         logger.info("POST /api/auth/register");
-        UserDTO body = ctx.bodyAsClass(UserDTO.class);
-        try {
+        Map<String, String> body = ctx.bodyAsClass(Map.class);
+            try {
             ctx.status(201).json(userService.register(
-                    body.getUsername(),
-                    body.getEmail(),
-                    body.getPassword()
+                    body.get("username"),
+                    body.get("email"),
+                    body.get("password")
             ));
-        } catch (IllegalArgumentException e) {
+         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("already")) {
                 ctx.status(409).json(Map.of("error", e.getMessage()));
             } else {
@@ -37,62 +37,19 @@ public class SecurityController {
             }
         }
     }
-    //    public void register(Context ctx) {
-//        logger.info("POST /api/auth/register");
-//        UserDTO body = ctx.bodyAsClass(UserDTO.class);
-//        if (body.getUsername() == null || body.getEmail() == null || body.getPassword() == null) {
-//            ctx.status(400).json(Map.of("error", "Username, email and password are required"));
-//            return;
-//        }
-//        if (userDAO.findByEmail(body.getEmail()) != null) {
-//            ctx.status(409).json(Map.of("error", "Email already in use"));
-//            return;
-//        }
-//        if (userDAO.findByUsername(body.getUsername()) != null) {
-//            ctx.status(409).json(Map.of("error", "Username already taken"));
-//            return;
-//        }
-//        User user = new User(body.getUsername(), body.getEmail(), body.getPassword(), false);
-//        User created = userDAO.create(user);
-//        userDAO.createRole("USER");
-//        userDAO.addRole(created.getUsername(), "USER");
-//        created = userDAO.findByUsername(created.getUsername());
-//        String token = TokenUtils.generateToken(created);
-//        ctx.status(201).json(Map.of(
-//                "token", token,
-//                "userId", created.getId(),
-//                "username", created.getUsername(),
-//                "roles", created.getRolesAsStrings()
-//        ));
-//    }
+
     public void login(Context ctx) {
         logger.info("POST /api/auth/login");
-        UserDTO body = ctx.bodyAsClass(UserDTO.class);
+        Map<String, String> body = ctx.bodyAsClass(Map.class);
         try {
             ctx.status(200).json(userService.login(
-                    body.getEmail(),
-                    body.getPassword()
+                    body.get("email"),
+                    body.get("password")
             ));
         } catch (IllegalArgumentException e) {
             ctx.status(401).json(Map.of("error", e.getMessage()));
         }
     }
-    //    public void login(Context ctx) {
-//        logger.info("POST /api/auth/login");
-//        UserDTO body = ctx.bodyAsClass(UserDTO.class);
-//        User user = userDAO.findByEmail(body.getEmail());
-//        if (user == null || !user.verifyPassword(body.getPassword())) {
-//            ctx.status(401).json(Map.of("error", "Invalid email or password"));
-//            return;
-//        }
-//        String token = TokenUtils.generateToken(user);
-//        ctx.status(200).json(Map.of(
-//                "token", token,
-//                "userId", user.getId(),
-//                "username", user.getUsername(),
-//                "roles", user.getRolesAsStrings()
-//        ));
-//    }
     public void authenticate(Context ctx) {
         String authHeader = ctx.header("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

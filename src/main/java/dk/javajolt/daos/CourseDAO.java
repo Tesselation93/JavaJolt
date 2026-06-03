@@ -13,13 +13,7 @@ public class CourseDAO extends BaseDAO<Course> {
         }
         return instance;
     }
-    //    private static CourseDAO instance;
-//    public static CourseDAO getInstance() {
-//        if (instance == null) {
-//            instance = new CourseDAO();
-//        }
-//        return instance;
-//    }
+
     public List<Course> findByLanguage(String language) {
         EntityManager em = emf.createEntityManager();
         try {

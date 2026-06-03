@@ -39,6 +39,7 @@ public class Lesson {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
+    // PROBLEM - NOT ALL
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)
     private List<Exercise> exercises = new ArrayList<>();
 

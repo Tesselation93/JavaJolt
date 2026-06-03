@@ -19,11 +19,13 @@ public class JavaJoltApiTest {
     @BeforeAll
     public static void setUpAll() {
         System.setProperty("test", "true");
+        System.setProperty("JWT_SECRET", "test-secret-long-enough-for-hmac-256");
+        System.setProperty("JWT_SECRET", "test-secret");
         HibernateConfig.getEntityManagerFactory();
 
         try (var em = HibernateConfig.getEntityManagerFactory().createEntityManager()) {
             em.getTransaction().begin();
-            em.createNativeQuery("TRUNCATE TABLE progress, exercises, lessons, courses, user_roles, roles, users CASCADE").executeUpdate();
+            em.createNativeQuery("TRUNCATE TABLE progress, exercises, lessons, courses, user_roles, users CASCADE").executeUpdate();
             em.getTransaction().commit();
         }
 

@@ -6,3 +6,7 @@ logs/
 *.iml
 .idea/
 .env
+src/main/resources/config.properties
+src/main/resources/config.properties
+
+src/main/resources/config.properties
