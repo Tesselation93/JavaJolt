@@ -34,6 +34,7 @@ public class ApplicationConfig {
                 cors.addRule(it -> it.allowHost("https://www.javajolt.dk"));
             });
             config.routes.before(ctx -> {
+                if (ctx.method().name().equals("OPTIONS")) return;
                 String routeKey = ctx.method().name() + " " + ctx.path();
                 if (PUBLIC_ROUTES.contains(routeKey)) return;
                 securityController.authenticate(ctx);
